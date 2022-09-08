@@ -3,6 +3,7 @@ import sqlite3
 from parse_jyutping import parse_jyutping
 from pypinyin.contrib.tone_convert import to_initials, to_finals
 from pypinyin.contrib.tone_convert import to_tone3
+from pypinyin import Style, pinyin
 import re
 
 # create tables
@@ -22,9 +23,19 @@ def c_py(x):
     ton = y[-1]
     if not ton.isdigit():
         ton = 5
+    pppy = pinyin(x[0], style=Style.TONE3, heteronym=True)
+    pppy = [i for x in pppy for i in x]
+    for y in pppy:
+        yini = to_initials(y, strict=False)
+        yfin = to_finals(y)
+        yton = y[-1]
+        if not yton.isdigit():
+            yton = 5
+        md.append([x[0],yini, yfin, yton])    
     md.append([x[0],ini, fin, ton])
 Mandarin.apply(c_py,axis=1)
 Mandarin = pd.DataFrame(md,columns=["zi","shengmu","yunmu","diao"])
+Mandarin = Mandarin.drop_duplicates()
 data = tuple(Mandarin.itertuples(index=True))
 wildcards = ','.join(['?'] * len(data[0]))
 insert = 'INSERT INTO PINYIN VALUES({})'.format(wildcards)
