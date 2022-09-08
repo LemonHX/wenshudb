@@ -31,8 +31,10 @@ def c_py(x):
         yton = y[-1]
         if not yton.isdigit():
             yton = 5
-        md.append([x[0],yini, yfin, yton])    
-    md.append([x[0],ini, fin, ton])
+        if yfin != "":
+            md.append([x[0],yini, yfin, yton])
+    if fin != "":
+        md.append([x[0],ini, fin, ton])
 Mandarin.apply(c_py,axis=1)
 Mandarin = pd.DataFrame(md,columns=["zi","shengmu","yunmu","diao"])
 Mandarin = Mandarin.drop_duplicates()
